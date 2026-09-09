@@ -18,7 +18,7 @@ const labelClass = "block text-sm font-medium text-gray-700 mb-1";
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { refreshCart } = useCart();
+  const { clear } = useCart();
   const { showToast } = useToast();
 
   const [summary, setSummary] = useState(null);
@@ -92,7 +92,7 @@ export default function Checkout() {
               signature: response.razorpay_signature,
               orderId: orderResponse.orderId,
             });
-            await refreshCart();
+            clear();
             navigate(`/order-success/${orderResponse.orderId}`);
           } catch {
             navigate("/payment-failed");
