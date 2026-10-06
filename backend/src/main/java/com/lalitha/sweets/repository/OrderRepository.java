@@ -74,21 +74,19 @@ public interface OrderRepository extends JpaRepository<Order, Long>{
         )
         AND
         (
-            :fromDate IS NULL
-            OR o.orderDate >= :fromDate
+            o.orderDate >= COALESCE(:fromDate, o.orderDate)
         )
         AND
         (
-            :toDate IS NULL
-            OR o.orderDate <= :toDate
+            o.orderDate <= COALESCE(:toDate, o.orderDate)
         )
         ORDER BY o.orderDate DESC
     	""")
-	    Page<Order> findOrdersWithFilters(
-	            @Param("search") String search,
-	            @Param("status") OrderStatus status,
-	            @Param("fromDate") LocalDateTime fromDate,
-	            @Param("toDate") LocalDateTime toDate,
-	            Pageable pageable
-	    );
+	Page<Order> findOrdersWithFilters(
+        @Param("search") String search,
+        @Param("status") OrderStatus status,
+        @Param("fromDate") LocalDateTime fromDate,
+        @Param("toDate") LocalDateTime toDate,
+        Pageable pageable
+	);
 }
