@@ -36,6 +36,7 @@ import com.lalitha.sweets.service.PaymentService;
 import com.lalitha.sweets.service.SmsService;
 import com.lalitha.sweets.service.WhatsAppService;
 import com.razorpay.Utils;
+import com.lalitha.sweets.service.OrderNotificationService;
 
 @RestController
 @RequestMapping("/api/checkout")
@@ -73,6 +74,9 @@ public class CheckoutApiController {
 
     @Autowired
     private PincodeRepository pincodeRepository;
+
+    @Autowired
+    private OrderNotificationService orderNotificationService;
 
     @Value("${razorpay.key.id}")
     private String razorpayKeyId;
@@ -287,11 +291,12 @@ public class CheckoutApiController {
 
         String trackUrl = frontendBaseUrl + "/track/" + order.getId();
 
-        emailService.sendOrderConfirmation(
-                order,
-                "Order Placed - Lalitha Surya Sweets",
-                trackUrl,
-                invoicePdf
+        // Run email/SMS/admin WhatsApp in the background.
+        // Payment verification no longer waits for external notification services.
+        orderNotificationService.sendOrderPlacedNotifications(
+            order,
+            trackUrl,
+            invoicePdf
         );
 
         // SMS is the interim customer-facing channel while the official
@@ -299,7 +304,7 @@ public class CheckoutApiController {
         // approval) is pending. Swap this back to whatsAppService.sendWhatsApp
         // once Meta approval comes through - the commented call below shows
         // the equivalent message.
-        smsService.sendOrderStatusSms(order, OrderStatus.PLACED, order.getCustomerPhoneSnapshot(), trackUrl);
+       // smsService.sendOrderStatusSms(order, OrderStatus.PLACED, order.getCustomerPhoneSnapshot(), trackUrl);
         // whatsAppService.sendWhatsApp(
         //         order.getCustomerPhoneSnapshot(),
         //         "🎉 *Payment Successful!*\n\n" +
@@ -311,15 +316,15 @@ public class CheckoutApiController {
         //         "🔎 Track Order:\n" + trackUrl
         // );
 
-        whatsAppService.sendWhatsApp(
-                adminNumber,
-                "🚨 *New Paid Order Received!*\n\n" +
-                "🧾 *Order ID:* #" + order.getId() + "\n" +
-                "👤 *Customer:* " + order.getCustomerNameSnapshot() + "\n" +
-                "📞 *Phone:* " + order.getCustomerPhoneSnapshot() + "\n" +
-                "💰 *Amount:* ₹" + order.getTotalAmount() + "\n\n" +
-                "📍 *Address:*\n" + order.getAddress()
-        );
+        // whatsAppService.sendWhatsApp(
+        //         adminNumber,
+        //         "🚨 *New Paid Order Received!*\n\n" +
+        //         "🧾 *Order ID:* #" + order.getId() + "\n" +
+        //         "👤 *Customer:* " + order.getCustomerNameSnapshot() + "\n" +
+        //         "📞 *Phone:* " + order.getCustomerPhoneSnapshot() + "\n" +
+        //         "💰 *Amount:* ₹" + order.getTotalAmount() + "\n\n" +
+        //         "📍 *Address:*\n" + order.getAddress()
+        // );
 
         cartService.clear();
 
