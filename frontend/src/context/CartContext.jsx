@@ -1,4 +1,3 @@
-```jsx
 import {
   createContext,
   useContext,
@@ -172,4 +171,3 @@ export function useCart() {
 
   return ctx;
 }
-```
