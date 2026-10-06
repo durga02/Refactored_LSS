@@ -60,30 +60,30 @@ public interface OrderRepository extends JpaRepository<Order, Long>{
 
 	
 	@Query("""
-	        SELECT o FROM Order o
-	        WHERE
-	        (
-	            :search IS NULL
-	            OR CAST(o.id AS string) LIKE %:search%
-	            OR LOWER(o.customerNameSnapshot) LIKE LOWER(CONCAT('%', :search, '%'))
-	        )
-	        AND
-	        (
-	            (:status IS NULL AND o.status <> com.lalitha.sweets.model.OrderStatus.PENDING)
-	            OR o.status = :status
-	        )
-	        AND
-	        (
-	            :fromDate IS NULL
-	            OR o.orderDate >= :fromDate
-	        )
-	        AND
-	        (
-	            :toDate IS NULL
-	            OR o.orderDate <= :toDate
-	        )
-	        ORDER BY o.orderDate DESC
-	    """)
+        SELECT o FROM Order o
+        WHERE
+        (
+            :search IS NULL
+            OR CAST(o.id AS string) LIKE CONCAT('%', CAST(:search AS string), '%')
+            OR LOWER(o.customerNameSnapshot) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+        )
+        AND
+        (
+            (:status IS NULL AND o.status <> com.lalitha.sweets.model.OrderStatus.PENDING)
+            OR o.status = :status
+        )
+        AND
+        (
+            :fromDate IS NULL
+            OR o.orderDate >= :fromDate
+        )
+        AND
+        (
+            :toDate IS NULL
+            OR o.orderDate <= :toDate
+        )
+        ORDER BY o.orderDate DESC
+    	""")
 	    Page<Order> findOrdersWithFilters(
 	            @Param("search") String search,
 	            @Param("status") OrderStatus status,
