@@ -9,6 +9,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 
 import com.lalitha.sweets.model.Order;
 import com.lalitha.sweets.model.OrderItem;
@@ -1308,7 +1309,7 @@ public class EmailService {
     // =========================================================
     // STATUS UPDATE EMAIL
     // =========================================================
-
+	@Async
     public void sendStatusUpdate(Order order) {
 
     String name =
