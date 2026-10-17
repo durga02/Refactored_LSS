@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getAdminOrder, updateOrderStatus } from "../../api/admin.js";
+import { getAdminOrder, updateOrderStatus, downloadAdminInvoice } from "../../api/admin.js";
 import { useToast } from "../../context/ToastContext.jsx";
 
 const STATUS_COLORS = {
@@ -25,6 +25,33 @@ export default function AdminOrderDetails() {
   const [error, setError] = useState(null);
   const [nextStatus, setNextStatus] = useState("");
   const [updating, setUpdating] = useState(false);
+
+  const [invoiceLoading, setInvoiceLoading] = useState(false);
+
+const handleDownloadInvoice = async () => {
+  setInvoiceLoading(true);
+
+  try {
+    const blob = await downloadAdminInvoice(id);
+    const url = window.URL.createObjectURL(
+      new Blob([blob], { type: "application/pdf" })
+    );
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `invoice-${id}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Invoice download failed:", error);
+    window.alert("Unable to download the invoice. Please try again.");
+  } finally {
+    setInvoiceLoading(false);
+  }
+};
 
   useEffect(() => {
     const controller = new AbortController();
