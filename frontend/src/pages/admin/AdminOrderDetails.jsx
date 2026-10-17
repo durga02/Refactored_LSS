@@ -137,6 +137,15 @@ export default function AdminOrderDetails() {
         </div>
       </div>
 
+      <button
+        type="button"
+        onClick={handleDownloadInvoice}
+        disabled={invoiceLoading}
+        className="rounded-lg bg-red-800 px-4 py-2 text-sm font-medium text-white hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+        {invoiceLoading ? "Downloading..." : "Download Invoice"}
+      </button>
+      
       {order.cancelReason && (
         <p className="text-sm text-red-600 mb-6">
           <strong>Cancel Reason:</strong> {order.cancelReason}
