@@ -34,3 +34,12 @@ export const deleteProduct = (id) => api.delete(`/admin/products/${id}`);
 
 export const getAdminCustomers = (config) =>
   api.get("/admin/customers", config).then((r) => r.data);
+
+
+export const downloadAdminInvoice = (id) =>
+  api
+    .get(`/checkout/invoice/${id}`, {
+      responseType: "blob",
+    })
+    .then((r) => r.data);
+
