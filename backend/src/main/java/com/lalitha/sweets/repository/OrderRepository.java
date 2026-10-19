@@ -22,7 +22,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>{
 	long countTotalOrders();
 	
 	@Query("""SELECT COALESCE(SUM(o.totalAmount),0) FROM Order o
-		   	WHERE o.paymentStatus = com.lalitha.sweets.model.paymentStatus.SUCCESS""")
+		   	WHERE o.paymentStatus = com.lalitha.sweets.model.PaymentStatus.SUCCESS""")
 	Double totalRevenue();
 	
 	@Query("SELECT COALESCE(SUM(o.totalAmount),0) FROM Order o WHERE CAST(o.orderDate AS LocalDate) = LOCAL DATE")
@@ -70,7 +70,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>{
         )
         AND
         (
-            (:status IS NULL AND o.status <> com.lalitha.sweets.model.OrderStatus.PENDING)
+            :status IS NULL 
             OR o.status = :status
         )
         AND
