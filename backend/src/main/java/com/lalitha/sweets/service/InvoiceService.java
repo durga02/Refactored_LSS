@@ -103,7 +103,7 @@ public class InvoiceService {
 	        .setTextAlignment(TextAlignment.CENTER));
 
 	// Replace with actual GSTIN
-	document.add(new Paragraph("GSTIN: 37ABCDE1234F1Z5")
+	document.add(new Paragraph("GSTIN: 37BCFPA6431B1Z7")
 	        .setBold()
 	        .setFontSize(10)
 	        .setTextAlignment(TextAlignment.CENTER));
@@ -114,9 +114,9 @@ public class InvoiceService {
 
 
 	// =========================
-	// TAX INVOICE TITLE
+	// BILL OF SUPPLY TITLE
 	// =========================
-	document.add(new Paragraph("TAX INVOICE")
+	document.add(new Paragraph("BILL OF SUPPLY")
 	        .setBold()
 	        .setFontSize(16)
 	        .setTextAlignment(TextAlignment.CENTER));
@@ -223,7 +223,7 @@ public class InvoiceService {
 	        .setFontSize(14));
 
 	document.add(new Paragraph(
-	        "Prices are inclusive of all applicable taxes.")
+	        "Composition taxable person, not eligible to collect tax on supplies.")
 	        .setItalic()
 	        .setFontSize(9));
 
