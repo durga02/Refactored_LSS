@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.springframework.web.bind.annotation.*;
 
 import com.lalitha.sweets.dto.DashboardStatsDto;
-import com.lalitha.sweets.model.OrderStatus;
+import com.lalitha.sweets.model.PaymentStatus;
 import com.lalitha.sweets.repository.OrderItemRepository;
 import com.lalitha.sweets.repository.OrderRepository;
 
@@ -30,7 +30,7 @@ public class AdminDashboardApiController {
 
 		dto.setTotalOrders(orderRepository.countTotalOrders());
 		dto.setTotalRevenue(Objects.requireNonNullElse(orderRepository.totalRevenue(), 0d));
-		dto.setPendingOrders(orderRepository.countByStatus(OrderStatus.PENDING));
+		dto.setPendingOrders(orderRepository.countByPaymentStatus(PaymentStatus.PENDING));
 		dto.setTodayOrders(orderRepository.countTodayOrders());
 		dto.setTodayRevenue(Objects.requireNonNullElse(orderRepository.todayRevenue(), 0d));
 
