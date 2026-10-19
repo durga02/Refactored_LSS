@@ -26,6 +26,9 @@ const AdminOrderDetails = lazy(() => import("./pages/admin/AdminOrderDetails.jsx
 const AdminProducts = lazy(() => import("./pages/admin/AdminProducts.jsx"));
 const AdminProductForm = lazy(() => import("./pages/admin/AdminProductForm.jsx"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers.jsx"));
+const AdminFestivalBanner = lazy(
+  () => import("./pages/admin/AdminFestivalBanner.jsx")
+);
 
 export default function App() {
   return (
@@ -67,6 +70,7 @@ export default function App() {
         <Route path="products/add" element={<AdminProductForm />} />
         <Route path="products/edit/:id" element={<AdminProductForm />} />
         <Route path="customers" element={<AdminCustomers />} />
+        <Route path="festival-banner" element={<AdminFestivalBanner />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
