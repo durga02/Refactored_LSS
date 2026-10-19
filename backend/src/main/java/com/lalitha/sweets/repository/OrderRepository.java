@@ -21,7 +21,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>{
 	@Query("SELECT COUNT(o) FROM Order o")
 	long countTotalOrders();
 	
-	@Query("SELECT COALESCE(SUM(o.totalAmount),0) FROM Order o")
+	@Query("""SELECT COALESCE(SUM(o.totalAmount),0) FROM Order o
+		   	WHERE o.paymentStatus = com.lalitha.sweets.model.paymentStatus.SUCCESS""")
 	Double totalRevenue();
 	
 	@Query("SELECT COALESCE(SUM(o.totalAmount),0) FROM Order o WHERE CAST(o.orderDate AS LocalDate) = LOCAL DATE")
