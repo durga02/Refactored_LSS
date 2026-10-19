@@ -213,7 +213,7 @@ public class InvoiceService {
 
 	document.add(new Paragraph("Subtotal: ₹ " + order.getSubtotal()));
 	document.add(new Paragraph("Handling Charges: ₹ " + order.getHandlingCharges()));
-	document.add(new Paragraph("Delivery Charges: ₹ " + order.getDeliveryCharges()));
+	document.add(new Paragraph("Delivery Charges: ₹ " + "To be Confirmed"));
 
 	document.add(new Paragraph(
 	        "------------------------------------------------------------"));
