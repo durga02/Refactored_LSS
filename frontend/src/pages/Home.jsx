@@ -7,6 +7,7 @@ import { getFeatured, getHomeSweets, getHomeHot } from "../api/products.js";
 import api from "../api/client.js";
 
 // Festival banner displayed below the hero carousel
+
 function FestivalBannerDisplay() {
   const [banner, setBanner] = useState(null);
 
@@ -22,34 +23,95 @@ function FestivalBannerDisplay() {
 
   return (
     <section
-      className="overflow-hidden px-4 py-3 text-center font-semibold text-white"
-      style={{ backgroundColor: banner.backgroundColor || "#7f1d1d" }}
+      className="relative overflow-hidden border-y border-amber-400/60 text-amber-50 shadow-md"
+      style={{
+        background: `linear-gradient(110deg, ${banner.backgroundColor || "#7f1d1d"} 0%, #641515 48%, ${banner.backgroundColor || "#7f1d1d"} 100%)`,
+      }}
       aria-label="Festival announcement"
+      role="status"
     >
-      {banner.scrolling ? (
-        <div className="overflow-hidden">
-          <div
-            className="inline-block whitespace-nowrap"
-            style={{
-              paddingLeft: "100%",
-              animation: "festival-banner-scroll 18s linear infinite",
-            }}
-          >
-            {banner.message}
+      {/* Decorative gold accents */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-20"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 15% 50%, #fbbf24 0, transparent 2px), radial-gradient(circle at 85% 50%, #fbbf24 0, transparent 2px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+
+      <div className="relative mx-auto flex min-h-[62px] max-w-7xl items-center gap-3 px-4 py-3 sm:gap-5 sm:px-6">
+        <span
+          aria-hidden="true"
+          className="hidden shrink-0 text-xl text-amber-300 sm:block"
+        >
+          ✦
+        </span>
+
+        {banner.scrolling ? (
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="festival-banner-track flex w-max items-center">
+              {[0, 1].map((item) => (
+                <span
+                  key={item}
+                  aria-hidden={item === 1}
+                  className="shrink-0 whitespace-nowrap px-8 text-sm font-semibold tracking-wide sm:px-12 sm:text-base"
+                >
+                  {banner.message}
+                  <span className="mx-8 text-amber-300" aria-hidden="true">
+                    ✧
+                  </span>
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-      ) : (
-        <p>{banner.message}</p>
-      )}
+        ) : (
+          <p className="min-w-0 flex-1 text-center text-sm font-semibold leading-relaxed tracking-wide sm:text-base">
+            <span className="mr-2 text-amber-300" aria-hidden="true">
+              ✦
+            </span>
+            {banner.message}
+            <span className="ml-2 text-amber-300" aria-hidden="true">
+              ✦
+            </span>
+          </p>
+        )}
+
+        <span
+          aria-hidden="true"
+          className="hidden shrink-0 text-xl text-amber-300 sm:block"
+        >
+          ✦
+        </span>
+      </div>
 
       {banner.scrolling && (
         <style>{`
-          @keyframes festival-banner-scroll {
-            from { transform: translateX(0); }
-            to { transform: translateX(-200%); }
+          .festival-banner-track {
+            animation: lss-festival-scroll 24s linear infinite;
+            will-change: transform;
           }
+
+          .festival-banner-track:hover {
+            animation-play-state: paused;
+          }
+
+          @keyframes lss-festival-scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+          }
+
           @media (prefers-reduced-motion: reduce) {
-            .festival-banner-scroll { animation: none; }
+            .festival-banner-track {
+              animation: none;
+              width: 100%;
+              justify-content: center;
+            }
+
+            .festival-banner-track span:nth-child(2) {
+              display: none;
+            }
           }
         `}</style>
       )}
