@@ -1,10 +1,63 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard.jsx";
 import HeroCarousel from "../components/HeroCarousel.jsx";
 import { getFeatured, getHomeSweets, getHomeHot } from "../api/products.js";
+import api from "../api/client.js";
 
-// ── Inline skeleton card ─────────────────────────────────────
+// Festival banner displayed below the hero carousel
+function FestivalBannerDisplay() {
+  const [banner, setBanner] = useState(null);
+
+  useEffect(() => {
+    api.get("/home/festival-banner")
+      .then(({ data }) => setBanner(data))
+      .catch(() => setBanner(null));
+  }, []);
+
+  if (!banner?.enabled || !banner?.message?.trim()) {
+    return null;
+  }
+
+  return (
+    <section
+      className="overflow-hidden px-4 py-3 text-center font-semibold text-white"
+      style={{ backgroundColor: banner.backgroundColor || "#7f1d1d" }}
+      aria-label="Festival announcement"
+    >
+      {banner.scrolling ? (
+        <div className="overflow-hidden">
+          <div
+            className="inline-block whitespace-nowrap"
+            style={{
+              paddingLeft: "100%",
+              animation: "festival-banner-scroll 18s linear infinite",
+            }}
+          >
+            {banner.message}
+          </div>
+        </div>
+      ) : (
+        <p>{banner.message}</p>
+      )}
+
+      {banner.scrolling && (
+        <style>{`
+          @keyframes festival-banner-scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-200%); }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .festival-banner-scroll { animation: none; }
+          }
+        `}</style>
+      )}
+    </section>
+  );
+}
+
+// Inline skeleton card
 function SkeletonCard() {
   return (
     <div className="bg-white/60 rounded-2xl overflow-hidden animate-skeleton">
@@ -18,7 +71,6 @@ function SkeletonCard() {
   );
 }
 
-// ── Benefits strip ───────────────────────────────────────────
 const BENEFITS = [
   { icon: "🧈", title: "Pure Desi Ghee", desc: "Every sweet made with authentic ghee" },
   { icon: "🌿", title: "No Artificial Essence", desc: "Natural flavours, always" },
@@ -26,7 +78,6 @@ const BENEFITS = [
   { icon: "🚚", title: "Pan-India Delivery", desc: "Delivered to your doorstep" },
 ];
 
-// ── Testimonials data ────────────────────────────────────────
 const TESTIMONIALS = [
   {
     name: "Priya R.",
@@ -48,7 +99,6 @@ const TESTIMONIALS = [
   },
 ];
 
-// ── Section heading helper ───────────────────────────────────
 function SectionHeading({ children }) {
   return (
     <div className="text-center mb-8">
@@ -90,14 +140,18 @@ export default function Home() {
 
   if (error) {
     return (
-      <p className="max-w-xl mx-auto my-20 text-center text-red-600 font-medium">{error}</p>
+      <p className="max-w-xl mx-auto my-20 text-center text-red-600 font-medium">
+        {error}
+      </p>
     );
   }
 
   return (
     <>
-      {/* Hero carousel */}
       <HeroCarousel />
+
+      {/* Festival banner managed from Admin */}
+      <FestivalBannerDisplay />
 
       {/* Benefits strip */}
       <section className="bg-white/80 py-8 shadow-sm">
