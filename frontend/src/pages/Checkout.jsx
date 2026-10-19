@@ -197,13 +197,13 @@ export default function Checkout() {
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between"><span className="text-gray-600">Subtotal</span><span>₹{summary.subtotal}</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">Handling</span><span>₹{summary.handling}</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">Delivery</span><span className="font-medium text-amber-700">To be Confirmed</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">Handling charges</span><span>₹{summary.handling}</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">Delivery charges</span><span className="font-medium text-amber-700">To be Confirmed</span></div>
               <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-100 mt-2">
-                <span>Total</span><span>₹{summary.total}</span>
+                <span>Payable now</span><span>₹{summary.total}</span>
               </div>
               <p className="mt-2 text-xs text-gray-500 text-right">
-                Final courier charges will be confirmed before dispatch.
+                Delivery charges are not included in the amount above. Final courier charges will be communicated and agreed with you before dispatch.
               </p>
             </div>
           </div>
@@ -226,8 +226,9 @@ export default function Checkout() {
             <div className="mt-4 text-sm text-gray-700">
               <p className="font-semibold mb-2">Shipping Charges:</p>
               <ul className="list-none space-y-1 ml-2">
-                <li>✅ An estimated shipping cost will be shown at checkout</li>
-                <li>✅ Final courier charges will be confirmed before dispatch</li>
+                <li>✅ An estimated shipping cost will be shown at checkout whenever available.</li>
+                <li>✅ If the final courier charge is not yet available, we will confirm it with you before dispatch.</li>
+                <li>✅You will be informed of the final courier charge and must agree to it before any additional payment or dispatch.</li>
               </ul>
               <p className="mt-2">📞 For exact courier charges, contact us on WhatsApp after placing your order.</p>
             </div>
