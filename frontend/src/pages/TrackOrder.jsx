@@ -109,7 +109,10 @@ export default function TrackOrder() {
             ["Order ID", order.id],
             ["Name", order.customerNameSnapshot],
             ["Order Date", order.orderDate ? new Date(order.orderDate).toLocaleString() : "-"],
-            ["Delivery Charges", `₹ ${order.deliveryCharges}`],
+            [
+              "Delivery Charges", 
+              "To be Confirmed",
+            ],
             ["Total Amount", `₹ ${order.totalAmount}`],
           ].map(([label, value]) => (
             <div key={label}>
