@@ -2,6 +2,7 @@ package com.lalitha.sweets.controller;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -201,7 +202,7 @@ public class CheckoutApiController {
         order.setCustomerPhoneSnapshot(customer.getPhone());
         order.setAddress(customer.getAddress());
         order.setState(customer.getState());
-        order.setOrderDate(LocalDateTime.now());
+        order.setOrderDate(LocalDateTime.now(ZoneId.of("Asia/Kolkata")));
         // Orders start out unpaid: PENDING until payment-verify confirms the
         // Razorpay signature. Only then do they get promoted to PLACED with
         // paymentStatus SUCCESS. This keeps abandoned/failed checkouts from
