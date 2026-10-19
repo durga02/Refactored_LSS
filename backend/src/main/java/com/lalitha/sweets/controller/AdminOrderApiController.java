@@ -2,6 +2,7 @@ package com.lalitha.sweets.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -111,7 +112,7 @@ public class AdminOrderApiController {
 		OrderStatusHistory history = new OrderStatusHistory();
 		history.setOrder(order);
 		history.setStatus(status);
-		history.setUpdatedTime(LocalDateTime.now());
+		history.setUpdatedTime(LocalDateTime.now(ZoneId.of("Asia/Kolkata")));
 		history.setUpdatedBy("ADMIN");
 		historyRepository.save(history);
 
