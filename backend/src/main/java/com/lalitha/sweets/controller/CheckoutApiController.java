@@ -284,7 +284,7 @@ public class CheckoutApiController {
         OrderStatusHistory history = new OrderStatusHistory();
         history.setOrder(order);
         history.setStatus(order.getStatus());
-        history.setUpdatedTime(LocalDateTime.now());
+        history.setUpdatedTime(LocalDateTime.now(ZoneId.of("Asia/Kolkata")));
         history.setUpdatedBy("CUSTOMER");
         historyRepository.save(history);
 
