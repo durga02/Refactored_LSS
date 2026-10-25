@@ -3,27 +3,28 @@ package com.lalitha.sweets.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.Base64;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Async;
 
 import com.lalitha.sweets.model.Order;
 import com.lalitha.sweets.model.OrderItem;
 
-import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class EmailService {
-
-    @Autowired
-    private JavaMailSender mailSender;
-
-    @Value("${spring.mail.username}")
-    private String fromAddress;
 
     @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
@@ -31,6 +32,17 @@ public class EmailService {
     @Value("${app.backend.base-url}")
     private String backendBaseUrl;
 
+	private final ObjectMapper objectMapper = new ObjectMapper();
+
+	private final HttpClient httpClient = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofSeconds(10))
+        .build();
+
+	@Value("${RESEND_API_KEY:}")
+	private String resendApiKey;
+
+	@Value("${RESEND_FROM_EMAIL:}")
+	private String resendFromEmail;
 
     // =========================================================
     // BRAND COLORS
@@ -308,59 +320,110 @@ public class EmailService {
     // SEND EMAIL
     // =========================================================
 
-    private void send(
-            String to,
-            String subject,
-            String bodyHtml,
-            byte[] pdfAttachment,
-            String attachmentName) {
+    
+	private void send(
+        String to,
+        String subject,
+        String bodyHtml,
+        byte[] pdfAttachment,
+        String attachmentName) {
 
-        try {
+    if (resendApiKey == null || resendApiKey.isBlank()) {
+        System.err.println(
+                "Resend email failed: RESEND_API_KEY is missing.");
+        return;
+    }
 
-            MimeMessage message =
-                    mailSender.createMimeMessage();
+    if (resendFromEmail == null || resendFromEmail.isBlank()) {
+        System.err.println(
+                "Resend email failed: RESEND_FROM_EMAIL is missing.");
+        return;
+    }
 
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(
-                            message,
-                            pdfAttachment != null,
-                            "UTF-8"
-                    );
+    if (to == null || to.isBlank()) {
+        System.err.println(
+                "Resend email failed: recipient email is missing.");
+        return;
+    }
 
-            helper.setFrom(fromAddress);
+    try {
+        ObjectNode payload = objectMapper.createObjectNode();
 
-            helper.setTo(to);
+        payload.put("from", resendFromEmail);
+        payload.put("subject", subject);
+        payload.put("html", wrapEmail(bodyHtml));
 
-            helper.setSubject(subject);
+        ArrayNode recipients = payload.putArray("to");
+        recipients.add(to);
 
-            helper.setText(
-                    wrapEmail(bodyHtml),
-                    true
-            );
+        if (pdfAttachment != null) {
+            ArrayNode attachments = payload.putArray("attachments");
 
-            if (pdfAttachment != null) {
+            ObjectNode attachment = attachments.addObject();
+            attachment.put("filename",
+                    attachmentName != null && !attachmentName.isBlank()
+                            ? attachmentName
+                            : "invoice.pdf");
+            attachment.put(
+                    "content",
+                    Base64.getEncoder().encodeToString(pdfAttachment));
+        }
 
-                helper.addAttachment(
-                        attachmentName,
-                        new ByteArrayResource(pdfAttachment)
-                );
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.resend.com/emails"))
+                .timeout(Duration.ofSeconds(30))
+                .header("Authorization", "Bearer " + resendApiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(
+                        objectMapper.writeValueAsString(payload)))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(
+                request,
+                HttpResponse.BodyHandlers.ofString());
+
+        int statusCode = response.statusCode();
+
+        if (statusCode >= 200 && statusCode < 300) {
+            String messageId = "unknown";
+
+            try {
+                JsonNode responseJson =
+                        objectMapper.readTree(response.body());
+
+                if (responseJson.hasNonNull("id")) {
+                    messageId = responseJson.get("id").asText();
+                }
+            } catch (Exception parseException) {
+                System.err.println(
+                        "Resend accepted the request, but its response "
+                        + "could not be parsed.");
             }
 
-            mailSender.send(message);
-
             System.out.println(
-                    "Order email sent successfully to: " + to
-            );
+                    "Resend accepted email for " + to
+                    + "; message ID: " + messageId);
 
-        } catch (Exception e) {
-
+        } else {
             System.err.println(
-                    "Failed to send order email to: " + to
-            );
-
-            e.printStackTrace();
+                    "Resend email request failed. HTTP status: "
+                    + statusCode + "; response: " + response.body());
         }
+
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+
+        System.err.println(
+                "Resend email request was interrupted for: " + to);
+
+    } catch (Exception e) {
+        System.err.println(
+                "Failed to send email through Resend to: " + to);
+
+        e.printStackTrace();
     }
+	}
+
 
 
     // =========================================================
