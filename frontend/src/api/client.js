@@ -23,16 +23,24 @@ api.interceptors.request.use((config) => {
 
 // A 401 on an /admin/* call means the token is missing/expired — clear it
 // so ProtectedRoute bounces the user back to the login page.
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && error.config?.url?.includes("/admin")) {
+    const requestUrl = error.config?.url || "";
+    const isAdminRequest = /(^|\/)admin(\/|$|\?)/i.test(requestUrl);
+
+    if (error.response?.status === 401 && isAdminRequest) {
       localStorage.removeItem(STORAGE_KEYS.ADMIN_TOKEN);
       localStorage.removeItem(STORAGE_KEYS.ADMIN_USERNAME);
+
+      window.dispatchEvent(new Event("admin-session-expired"));
     }
+
     return Promise.reject(error);
   }
 );
+
 
 export default api;
 export { API_BASE_URL };
