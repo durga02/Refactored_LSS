@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard.jsx";
 import { getProductsByCategory } from "../api/products.js";
 
@@ -27,7 +28,8 @@ export default function Category() {
   const { category } = useParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const location = useLocation();
+  
   useEffect(() => {
     setLoading(true);
     const controller = new AbortController();
@@ -41,6 +43,19 @@ export default function Category() {
 
     return () => controller.abort();
   }, [category]);
+
+  useEffect(() => {
+    if (loading || !location.state?.targetProductId) return;
+
+    const targetId = `product-${location.state.targetProductId}`;
+
+    requestAnimationFrame(() => {
+      document.getElementById(targetId)?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    });
+    }, [loading, products, location.state]);
 
   const emoji = CATEGORY_EMOJI[category] ?? "";
 
