@@ -51,12 +51,15 @@ export default function Header() {
     setResults(allProducts.filter((p) => p.name.toLowerCase().includes(lower)));
     setShowResults(true);
   };
+  
+   const goToProduct = (product) => {
+      setShowResults(false);
+      setQuery("");
 
-  const goToProduct = (product) => {
-    setShowResults(false);
-    setQuery("");
-    navigate(`/category/${encodeURIComponent(product.category)}`);
-  };
+      navigate(`/category/${encodeURIComponent(product.category)}`, {
+      state: { targetProductId: product.id },
+      });
+    };
 
   return (
     <header className="sticky top-0 z-50 bg-[#f4b400] shadow-md">
