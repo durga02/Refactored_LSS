@@ -39,7 +39,8 @@ function ProductCard({ product }) {
   return (
     <>
       <div
-        className="bg-white rounded-2xl shadow-md hover:-translate-y-1 transition-transform duration-300 flex flex-col overflow-hidden cursor-pointer group"
+        id={`product-${product.id}`}
+        className="bg-white rounded-2xl shadow-md hover:-translate-y-1 transition-transform duration-300 flex flex-col overflow-hidden cursor-pointer group scroll-mt-32"
         onClick={() => setModalOpen(true)}
       >
         {/* ── Image zone — fixed height so card never jumps ── */}
